@@ -1,3 +1,3 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Cybersecurity Portfolio Loaded - Matthew Felderhoff");
+  console.log("Matthew Felderhoff's portfolio is live.");
 });
