@@ -70,10 +70,29 @@
 
     <section id="contact">
       <h2>Contact</h2>
-      <p>Email: <a href="mailto:matthew.felderhoff@gmail.com">matthew.felderhoff@gmail.com</a></p>
-      <p>Phone: <a href="tel:+18067360328">(806) 736-0328</a></p>
-      <p>LinkedIn: <a href="https://www.linkedin.com/in/yourprofile" target="_blank">yourprofile</a></p>
-      <p>GitHub: <a href="https://github.com/yourusername" target="_blank">yourusername</a></p>
+
+      <form action="YOUR_FORMSPREE_ENDPOINT_HERE" method="POST">
+        <!-- Honeypot field -->
+        <input type="text" name="_gotcha" style="display: none;" tabindex="-1" autocomplete="off" />
+
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required />
+
+        <label for="email">Email:</label>
+        <input type="email" name="_replyto" id="email" required />
+
+        <label for="message">Message:</label>
+        <textarea name="message" id="message" rows="5" required></textarea>
+
+        <button type="submit">Send Message</button>
+      </form>
+
+      <div class="contact-info">
+        <p>Email: <a href="mailto:matthew.felderhoff@gmail.com">matthew.felderhoff@gmail.com</a></p>
+        <p>Phone: <a href="tel:+18067360328">(806) 736-0328</a></p>
+        <p>LinkedIn: <a href="https://www.linkedin.com/in/yourprofile" target="_blank">yourprofile</a></p>
+        <p>GitHub: <a href="https://github.com/yourusername" target="_blank">yourusername</a></p>
+      </div>
     </section>
   </main>
 
