@@ -1,239 +1,185 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Wedding Dress Styles — Image Gallery (up to 100)</title>
-  <style>
-    :root{
-      --bg:#f7f7fb; --card:#ffffff; --muted:#6b7280; --accent:#7c3aed;
-      --gap:12px;
-    }
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{background:linear-gradient(180deg,var(--bg),#ffffff);padding:20px;color:#111}
-    .container{max-width:1200px;margin:0 auto}
-    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
-    h1{font-size:20px;margin:0}
-    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
-
-    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-    .btn{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
-    .btn.secondary{background:#e6e6ef;color:#111}
-    .btn.danger{background:#ef4444}
-
-    .uploader{margin-top:18px;padding:14px;border-radius:12px;background:var(--card);box-shadow:0 6px 18px rgba(20,20,50,0.04)}
-    .dropzone{border:2px dashed #e6e6ef;padding:18px;border-radius:10px;text-align:center;color:var(--muted);cursor:pointer}
-    .muted{color:var(--muted);font-size:13px}
-
-    .meta-row{display:flex;gap:10px;align-items:center}
-    .stats{margin-left:auto;color:var(--muted);font-size:13px}
-
-    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--gap);margin-top:18px}
-    .card{background:var(--card);border-radius:10px;padding:8px;box-shadow:0 4px 12px rgba(16,16,40,0.04);display:flex;flex-direction:column}
-    .thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/5;background:#fafafa;display:flex;align-items:center;justify-content:center}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .card .info{padding:8px 6px;display:flex;flex-direction:column;gap:6px}
-    .card input[type=text]{width:100%;padding:6px;border-radius:6px;border:1px solid #e9e9f0;font-size:13px}
-    .card .tag{font-size:12px;color:var(--muted)}
-    .card .actions{display:flex;gap:6px;margin-top:6px}
-    .icon-btn{padding:6px 8px;border-radius:8px;border:1px solid #eee;background:white;cursor:pointer;font-size:13px}
-    .drag-handle{cursor:grab}
-
-    footer{margin-top:20px;color:var(--muted);font-size:13px}
-
-    /* small tweak for dragover */
-    .drop-active{outline:3px dashed rgba(124,58,237,0.25);}
-
-    @media (max-width:520px){.controls{flex-direction:column;align-items:stretch}.meta-row{flex-direction:column;align-items:flex-start}}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wedding Dress Style Selector</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .thumb {
+    height: 250px;
+    background: #eaeaea;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .info input[type="text"] {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .btn {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn:hover {
+    background: #0056b3;
+  }
+  .namelist {
+    font-size: 14px;
+    color: #444;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div>
-        <h1>Wedding Dress Styles — Gallery</h1>
-        <p class="lead">Upload up to 100 images. Add name/tags, reorder, and export a JSON of your gallery.</p>
-      </div>
-      <div class="meta-row">
-        <div class="muted">Max images: <strong>100</strong></div>
-        <div class="stats" id="count">0 / 100</div>
-      </div>
-    </header>
+<div class="container">
+  <header>
+    <h1>Wedding Dress Style Selector</h1>
+    <p>Add up to 100 styles. Visitors can enter their name on whichever style they choose.</p>
+  </header>
 
-    <div class="controls">
-      <label class="btn" id="addFilesBtn">+ Add images<input id="fileInput" type="file" accept="image/*" multiple style="display:none" /></label>
-      <button class="btn secondary" id="clearBtn">Clear all</button>
-      <button class="btn secondary" id="exportJsonBtn">Export JSON</button>
-      <label class="btn secondary">Import JSON<input id="importJsonInput" type="file" accept="application/json" style="display:none" /></label>
-      <button class="btn danger" id="removeSelectedBtn">Remove selected</button>
-    </div>
-
-    <div class="uploader">
-      <div id="dropzone" class="dropzone" tabindex="0">
-        Drag & drop images here, or click to browse.
-        <div class="muted" style="margin-top:8px">Supported: JPG, PNG, GIF (images are stored client-side in memory).</div>
-      </div>
-
-      <div class="gallery" id="gallery" aria-live="polite"></div>
-    </div>
-
-    <footer>
-      <div class="muted">Tips: Use the drag handle on each card to reorder. Click an image to open full-size in a new tab. Exported JSON contains image data URLs and metadata so you can save or restore later.</div>
-    </footer>
+  <div style="margin-bottom: 20px;">
+    <button class="btn" id="addImagesBtn">Upload Images</button>
+    <input type="file" id="imageUpload" accept="image/*" multiple style="display:none" />
   </div>
 
-  <script>
-    // Limit and state
-    const MAX_IMAGES = 100;
-    const gallery = document.getElementById('gallery');
-    const fileInput = document.getElementById('fileInput');
-    const dropzone = document.getElementById('dropzone');
-    const countEl = document.getElementById('count');
-    const clearBtn = document.getElementById('clearBtn');
-    const exportJsonBtn = document.getElementById('exportJsonBtn');
-    const importJsonInput = document.getElementById('importJsonInput');
-    const removeSelectedBtn = document.getElementById('removeSelectedBtn');
+  <div class="gallery" id="gallery"></div>
+</div>
 
-    // In-memory list: {id, name, tags, dataUrl, fileName}
-    let images = [];
+<script>
+const MAX_SLOTS = 100;
+let slots = Array.from({length: MAX_SLOTS}, (_, i) => ({ id: i + 1, img: null, names: [] }));
 
-    function updateCount(){ countEl.textContent = images.length + ' / ' + MAX_IMAGES; }
+const gallery = document.getElementById('gallery');
+const imageUpload = document.getElementById('imageUpload');
+const addImagesBtn = document.getElementById('addImagesBtn');
 
-    // Helpers
-    function uid(){ return 'i_' + Math.random().toString(36).slice(2,9); }
+function renderGallery() {
+  gallery.innerHTML = '';
+  slots.forEach(slot => {
+    const card = document.createElement('div');
+    card.className = 'card';
 
-    function createCard(imgObj){
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.draggable = true;
-      card.dataset.id = imgObj.id;
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
 
-      // Thumb
-      const thumb = document.createElement('div'); thumb.className = 'thumb';
-      const imageEl = document.createElement('img');
-      imageEl.src = imgObj.dataUrl;
-      imageEl.alt = imgObj.name || imgObj.fileName || 'wedding dress';
-      imageEl.loading = 'lazy';
-      imageEl.addEventListener('click', ()=>{ window.open(imgObj.dataUrl,'_blank'); });
-      thumb.appendChild(imageEl);
+    if (slot.img) {
+      const img = document.createElement('img');
+      img.src = slot.img;
+      thumb.appendChild(img);
+    } else {
+      thumb.innerHTML = `<span>Slot ${slot.id}</span>`;
+    }
 
-      // Info
-      const info = document.createElement('div'); info.className = 'info';
-      const nameInput = document.createElement('input'); nameInput.type = 'text'; nameInput.placeholder = 'Style name (e.g., A-line, Mermaid)'; nameInput.value = imgObj.name || '';
-      nameInput.addEventListener('input', ()=>{ imgObj.name = nameInput.value; });
+    const info = document.createElement('div');
+    info.className = 'info';
 
-      const tagInput = document.createElement('input'); tagInput.type = 'text'; tagInput.placeholder = 'Tags (comma separated)'; tagInput.value = imgObj.tags || '';
-      tagInput.addEventListener('input', ()=>{ imgObj.tags = tagInput.value; });
-
-      const actions = document.createElement('div'); actions.className = 'actions';
-      const dragBtn = document.createElement('button'); dragBtn.className = 'icon-btn drag-handle'; dragBtn.textContent = '⇅'; dragBtn.title = 'Drag to reorder';
-      const selectBtn = document.createElement('button'); selectBtn.className = 'icon-btn'; selectBtn.textContent = 'Select';
-      const removeBtn = document.createElement('button'); removeBtn.className = 'icon-btn'; removeBtn.textContent = 'Remove';
-
-      selectBtn.addEventListener('click', ()=>{ card.classList.toggle('selected'); });
-      removeBtn.addEventListener('click', ()=>{ removeImageById(imgObj.id); });
-
-      actions.appendChild(dragBtn); actions.appendChild(selectBtn); actions.appendChild(removeBtn);
-
-      info.appendChild(nameInput); info.appendChild(tagInput); info.appendChild(actions);
-
-      card.appendChild(thumb); card.appendChild(info);
-
-      // Drag & drop behavior for reordering
-      card.addEventListener('dragstart', (e)=>{
-        e.dataTransfer.setData('text/plain', imgObj.id);
-        card.classList.add('dragging');
+    if (!slot.img) {
+      const uploadInput = document.createElement('input');
+      uploadInput.type = 'file';
+      uploadInput.accept = 'image/*';
+      uploadInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          slot.img = reader.result;
+          renderGallery();
+        };
+        reader.readAsDataURL(file);
       });
-      card.addEventListener('dragend', ()=>{ card.classList.remove('dragging'); });
-
-      card.addEventListener('dragover', (e)=>{ e.preventDefault(); const dragging = document.querySelector('.dragging'); if(!dragging) return; if(dragging === card) return; const rect = card.getBoundingClientRect(); const after = (e.clientY - rect.top) > rect.height/2; if(after) card.parentNode.insertBefore(dragging, card.nextSibling); else card.parentNode.insertBefore(dragging, card);
-      });
-
-      return card;
+      info.appendChild(uploadInput);
     }
 
-    function renderGallery(){
-      gallery.innerHTML = '';
-      images.forEach(img => gallery.appendChild(createCard(img)));
-      updateCount();
-    }
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Enter your name if you pick this style';
 
-    function addFiles(files){
-      const fileArray = Array.from(files).slice(0, MAX_IMAGES - images.length);
-      if(fileArray.length === 0){ alert('Reached maximum of ' + MAX_IMAGES + ' images.'); return; }
-
-      const readers = fileArray.map(f => readFileAsDataURL(f).then(url => ({id:uid(), fileName:f.name, dataUrl:url, name:'', tags:''})) );
-      Promise.all(readers).then(results => { images = images.concat(results); renderGallery(); });
-    }
-
-    function readFileAsDataURL(file){
-      return new Promise((res, rej)=>{
-        const r = new FileReader(); r.onload = ()=>res(r.result); r.onerror = rej; r.readAsDataURL(file);
-      });
-    }
-
-    function removeImageById(id){ images = images.filter(i=>i.id!==id); renderGallery(); }
-
-    // File input
-    fileInput.addEventListener('change', (e)=>{ addFiles(e.target.files); fileInput.value = ''; });
-
-    // Dropzone
-    ['dragenter','dragover'].forEach(ev=>{
-      dropzone.addEventListener(ev, (e)=>{ e.preventDefault(); dropzone.classList.add('drop-active'); });
-    });
-    ['dragleave','drop'].forEach(ev=>{
-      dropzone.addEventListener(ev, (e)=>{ e.preventDefault(); dropzone.classList.remove('drop-active'); });
-    });
-    dropzone.addEventListener('drop', (e)=>{ const dt = e.dataTransfer; if(dt && dt.files) addFiles(dt.files); });
-    dropzone.addEventListener('click', ()=>fileInput.click());
-    dropzone.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') fileInput.click(); });
-
-    // Buttons
-    clearBtn.addEventListener('click', ()=>{ if(confirm('Clear all images?')){ images=[]; renderGallery(); }});
-
-    removeSelectedBtn.addEventListener('click', ()=>{
-      const selected = Array.from(document.querySelectorAll('.card.selected')).map(c=>c.dataset.id);
-      if(selected.length===0){ alert('No selected images. Click "Select" on cards you want to remove.'); return; }
-      if(!confirm('Remove ' + selected.length + ' selected images?')) return;
-      images = images.filter(i=> !selected.includes(i.id)); renderGallery();
-    });
-
-    // Export JSON
-    exportJsonBtn.addEventListener('click', ()=>{
-      if(images.length===0){ alert('No images to export.'); return; }
-      // Ensure the order in DOM is taken (in case of manual reordering)
-      const domOrder = Array.from(gallery.children).map(c=>c.dataset.id);
-      const ordered = domOrder.map(id => images.find(i=>i.id===id)).filter(Boolean);
-      const payload = ordered.map(i=>({id:i.id,name:i.name,tags:i.tags,fileName:i.fileName,dataUrl:i.dataUrl}));
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'wedding-dress-gallery.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    });
-
-    // Import JSON (restores images array fully)
-    importJsonInput.addEventListener('change', async (e)=>{
-      const f = e.target.files[0]; if(!f) return; try{
-        const txt = await f.text(); const parsed = JSON.parse(txt);
-        if(!Array.isArray(parsed)) throw new Error('Invalid format');
-        // Respect max images
-        const limited = parsed.slice(0, MAX_IMAGES);
-        images = limited.map(item => ({ id:item.id || uid(), name:item.name || '', tags:item.tags || '', fileName:item.fileName || '', dataUrl:item.dataUrl || '' }));
+    const submitBtn = document.createElement('button');
+    submitBtn.className = 'btn';
+    submitBtn.textContent = 'Submit';
+    submitBtn.addEventListener('click', () => {
+      if (nameInput.value.trim() !== '') {
+        slot.names.push(nameInput.value.trim());
         renderGallery();
-      }catch(err){ alert('Failed to import JSON: ' + err.message); }
-      importJsonInput.value = '';
+      }
     });
 
-    // Make sure DOM order is saved into images when exporting
-    // Add a mutation observer to update images order when DOM changes
-    const mo = new MutationObserver(()=>{
-      const domOrder = Array.from(gallery.children).map(c=>c.dataset.id);
-      images = domOrder.map(id => images.find(i=>i.id===id)).filter(Boolean);
-      updateCount();
-    });
-    mo.observe(gallery, {childList:true});
+    const namesList = document.createElement('div');
+    namesList.className = 'namelist';
+    namesList.textContent = slot.names.length ? `Chosen by: ${slot.names.join(', ')}` : 'No selections yet';
 
-    // Initialize
-    updateCount();
-  </script>
+    info.appendChild(nameInput);
+    info.appendChild(submitBtn);
+    info.appendChild(namesList);
+
+    card.appendChild(thumb);
+    card.appendChild(info);
+    gallery.appendChild(card);
+  });
+}
+
+addImagesBtn.addEventListener('click', () => imageUpload.click());
+
+imageUpload.addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  let fileIndex = 0;
+
+  for (let i = 0; i < slots.length && fileIndex < files.length; i++) {
+    if (!slots[i].img) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        slots[i].img = reader.result;
+        renderGallery();
+      };
+      reader.readAsDataURL(files[fileIndex]);
+      fileIndex++;
+    }
+  }
+});
+
+renderGallery();
+</script>
 </body>
 </html>
